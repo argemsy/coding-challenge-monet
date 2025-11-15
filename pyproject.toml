@@ -10,19 +10,13 @@ requires-python = ">=3.11"
 dependencies = [
     "django (>=5.2.7,<6.0.0)",
     "dj-database-url (>=3.0.1,<4.0.0)",
-    "pytest (>=8.4.2,<9.0.0)",
-    "pytest-django (>=4.11.1,<5.0.0)",
-    "flake8 (>=7.3.0,<8.0.0)",
-    "isort (>=7.0.0,<8.0.0)",
-    "black (>=25.9.0,<26.0.0)",
     "pydantic (>=2.12.3,<3.0.0)",
     "pydantic-settings (>=2.11.0,<3.0.0)",
     "python-dotenv (>=1.2.1,<2.0.0)",
-    "ruff (>=0.14.0,<0.15.0)",
-    "mypy (>=1.18.2,<2.0.0)",
     "httpx (>=0.28.1,<0.29.0)",
     "psycopg2-binary (>=2.9.11,<3.0.0)",
     "pyjwt (>=2.10.1,<3.0.0)",
+    "pytest-asyncio (>=1.3.0,<2.0.0)",
 ]
 
 
@@ -42,19 +36,18 @@ exclude = [
 [tool.ruff.lint]
 select = ["N", "B", "C", "E", "F", "S", "W", "B9"]
 
-# --- Ignored rules ---
+# --- Ignored rules: E501 (Line too long) ELIMINADO para dejar que Black haga su trabajo ---
 ignore = [
     "S101",  # Use of assert detected
     "E203",  # Whitespace before ':' (black compatibility)
     "E266",  # Too many leading '#' for block comment
-    "E501",  # Line too long
-    "E402",  # Module level import not at top of file
+    "E402",  # Module level import not at top of file (Ajustar si es posible)
     "E731",  # Do not assign a lambda expression
     "B011",  # Do not call assert False
     "B014",  # Redundant exception
     "N812",  # Lowercase imported as non-lowercase
     "N804",  # Invalid class name
-    "C901",  # Function too complex
+    "C901",  # Function too complex (Recomendación: Refactorizar código en lugar de ignorar)
     "B008",
 ]
 
@@ -113,20 +106,29 @@ strict_optional = true
 disallow_untyped_defs = true
 exclude = ["migrations", "tests"]
 
+[[tool.mypy.overrides]]
+module = "src.monet"
+disable_error_codes = ["var-annotated"]
+
+
 [tool.django-stubs]
 django_settings_module = "config.settings.base"
-
-
 
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[dependency-groups]
-dev = [
-    "django-stubs (>=5.2.7,<6.0.0)"
-]
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=8.4.2,<9.0.0"
+pytest-django = ">=4.11.1,<5.0.0"
+flake8 = ">=7.3.0,<8.0.0"
+isort = ">=7.0.0,<8.0.0"
+black = ">=25.9.0,<26.0.0"
+ruff = ">=0.14.0,<0.15.0"
+mypy = ">=1.18.2,<2.0.0"
+django-stubs = ">=5.2.7,<6.0.0"
 
 [tool.poetry]
 package-mode = false

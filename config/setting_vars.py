@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     # --- Core settings ---
     DEBUG: int = Field(default=1, description="Enable/disable debug mode.")
     DATABASE_URL: Optional[str] = Field(
-        default="", description="Database connection string."
+        default=None, description="Database connection string."
     )
     SECRET_KEY: SecretStr = Field(default="*")
 

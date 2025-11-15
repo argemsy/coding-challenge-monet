@@ -1,0 +1,1 @@
+from .quiz_created import audit_log_register_quiz_created_handler

@@ -1,0 +1,1 @@
+from .quiz_repository_impl import DjangoORMQuizRepositoryImpl

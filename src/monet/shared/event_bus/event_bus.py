@@ -29,12 +29,12 @@ class EventBus(ABC):
         )
 
     @abstractmethod
-    def register(self, topic: DomainEventTopicEnum, handler: Any):
+    def register(self, topic: DomainEventTopicEnum, handler: Any) -> None:
         """Registers a handler for a specific topic."""
         pass
 
     @abstractmethod
-    def publish(self, topic: DomainEventTopicEnum, event: DomainEvent):
+    def publish(self, topic: DomainEventTopicEnum, event: DomainEvent) -> None:
         pass
 
 
@@ -47,13 +47,15 @@ class SyncDomainEventBus(EventBus):
             defaultdict(list)
         )
 
-    def register(self, topic: DomainEventTopicEnum, handler: SyncHandlerType):
+    def register(
+        self, topic: DomainEventTopicEnum, handler: SyncHandlerType
+    ) -> None:
         """Registers a synchronous handler, preventing duplicates."""
 
         if handler not in self._handlers[topic]:
             self._handlers[topic].append(handler)
 
-    def publish(self, topic: DomainEventTopicEnum, event: DomainEvent):
+    def publish(self, topic: DomainEventTopicEnum, event: DomainEvent) -> None:
         """
         Executes registered handlers sequentially, isolating and logging
         failures.
@@ -93,19 +95,27 @@ class AsyncDomainEventBus(EventBus):
     concurrency.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self._handlers: dict[DomainEventTopicEnum, list[AsyncHandlerType]] = (
             defaultdict(list)
         )
 
-    def register(self, topic: DomainEventTopicEnum, handler: AsyncHandlerType):
+    @property
+    def handlers(self) -> dict[DomainEventTopicEnum, list[AsyncHandlerType]]:
+        return self._handlers
+
+    def register(
+        self, topic: DomainEventTopicEnum, handler: AsyncHandlerType
+    ) -> None:
         """Registers an asynchronous handler, preventing duplicates."""
 
         if handler not in self._handlers[topic]:
             self._handlers[topic].append(handler)
 
-    async def publish(self, topic: DomainEventTopicEnum, event: DomainEvent):
+    async def publish(
+        self, topic: DomainEventTopicEnum, event: DomainEvent
+    ) -> None:
         """
         Executes registered handlers concurrently, isolating and logging
         failures.
@@ -130,7 +140,6 @@ class AsyncDomainEventBus(EventBus):
                     if hasattr(handler, "__name__")
                     else str(handler)
                 )
-
                 logger.error(
                     f"***{log_tag}*** InternalError in concurrent handler "
                     f"{handler_name!r}, Topic: {topic_name!r}. "
@@ -151,11 +160,11 @@ class DomainEventBusFactory:
     """
 
     @staticmethod
-    def sync():
+    def sync() -> SyncDomainEventBus:
         """Returns a synchronous event bus instance."""
         return SyncDomainEventBus()
 
     @staticmethod
-    def async_():
+    def async_() -> AsyncDomainEventBus:
         """Returns an asynchronous event bus instance."""
         return AsyncDomainEventBus()
